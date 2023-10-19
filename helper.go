@@ -1,17 +1,29 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
 type pair struct {
 	movie string
 	mTime time.Time
+}
+
+type Movie struct {
+	Name  string `json:"name"`
+	Year  int    `json:"year"`
+	Month int    `json:"month"`
+	Day   int    `json:"day"`
+	Hour  int    `json:"hour"`
+	Min   int    `json:"min"`
+}
+type Movies struct {
+	Movies []Movie `json:"movies"`
 }
 
 var movieDurability int = 3
@@ -23,26 +35,18 @@ func p(temp string) int {
 	return x
 }
 func init() {
-	file, _ := os.Open("movieSchedule.txt")
+	jsonFile, _ := os.Open("movies.json")
+	var moviesJson Movies
+	byteValue, _ := io.ReadAll(jsonFile)
+	json.Unmarshal(byteValue, &moviesJson)
 	tempTime := time.Now()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		temp := scanner.Text()
-		arr := strings.Split(temp, " ")
-		lenA := len(arr)
-
-		t := time.Date(p(arr[lenA-5]), time.Month(p(arr[lenA-4])), p(arr[lenA-3]), p(arr[lenA-2]), p(arr[lenA-1]), 0, 0, time.Now().UTC().Location())
+	for i := 0; i < len(moviesJson.Movies); i++ {
+		t := time.Date(moviesJson.Movies[i].Year, time.Month(moviesJson.Movies[i].Month), moviesJson.Movies[i].Day, moviesJson.Movies[i].Hour,
+			moviesJson.Movies[i].Min, 0, 0, time.Now().UTC().Location())
 		if t.After(tempTime) {
 			tempTime = t
 		}
-
-		lenB := lenA - 5
-		var name string = ""
-		for i := 0; i < lenB; i++ {
-			name += arr[i]
-			name += " "
-		}
-		movies = append(movies, pair{name, t})
+		movies = append(movies, pair{moviesJson.Movies[i].Name, t})
 	}
 	dayCount = tempTime.YearDay() - time.Now().YearDay() + 1
 }
