@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -30,10 +29,6 @@ var movieDurability int = 3
 var movies []pair
 var dayCount int
 
-func p(temp string) int {
-	x, _ := strconv.Atoi(temp)
-	return x
-}
 func init() {
 	jsonFile, _ := os.Open("movies.json")
 	var moviesJson Movies
