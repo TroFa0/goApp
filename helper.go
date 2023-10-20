@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"time"
@@ -28,6 +27,7 @@ type Movies struct {
 var movieDurability int = 3
 var movies []pair
 var dayCount int
+var arr []string
 
 func init() {
 	jsonFile, _ := os.Open("movies.json")
@@ -47,10 +47,7 @@ func init() {
 }
 
 func main() {
-	var name string
-	fmt.Println("Enter username: ")
-	fmt.Scan(&name)
-	getMovies(name)
+	open(getUrl())
 }
 func toTime(str string) time.Time {
 	time, _ := time.Parse(time.RFC3339, str)
@@ -61,7 +58,8 @@ func MovieByOneTime(time time.Time) {
 	for i := 0; i < len(movies); i++ {
 		if movies[i].mTime.Month() == time.Month() &&
 			movies[i].mTime.Day() == time.Day() {
-			fmt.Println(movies[i].movie, movies[i].mTime)
+			str := movies[i].movie + " " + movies[i].mTime.String()
+			arr = append(arr, str)
 		}
 	}
 }
@@ -73,15 +71,14 @@ func MovieByTwoTimes(start time.Time, end time.Time) {
 			movies[i].mTime.Day() == start.Day() && movies[i].mTime.After(start) {
 			temp2 := movies[i].mTime.Add(time.Hour * time.Duration(movieDurability))
 			if temp2.Before(end) {
-				fmt.Println(movies[i].movie, movies[i].mTime)
+				str := movies[i].movie + " " + movies[i].mTime.String()
+				arr = append(arr, str)
 			}
 		}
 	}
 }
 
-func getMovies(user string) {
-	aut(user)
-	fmt.Println("Фільми на які ви можете піти:")
+func getMovies(user string) []string {
 	temp := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()+1, 0, 0, 0, 0, time.Now().UTC().Location())
 	for i := 0; i <= dayCount; i++ {
 		events := getEventsDay(user, temp)
@@ -129,4 +126,5 @@ func getMovies(user string) {
 		}
 		temp = temp.AddDate(0, 0, 1)
 	}
+	return arr
 }

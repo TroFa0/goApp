@@ -15,6 +15,19 @@ import (
 	"google.golang.org/api/option"
 )
 
+func getUrl() string {
+	b, err := os.ReadFile("webC.json")
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v", err)
+	}
+
+	config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
+	}
+	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	return authURL
+}
 func getClient(config *oauth2.Config, username string) *http.Client {
 	tokFile := (username + ".json")
 	tok, err := tokenFromFile(tokFile)
@@ -26,15 +39,7 @@ func getClient(config *oauth2.Config, username string) *http.Client {
 }
 
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
-	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Go to the following link in your browser then type the "+
-		"authorization code: \n%v\n", authURL)
-
-	var authCode string
-	if _, err := fmt.Scan(&authCode); err != nil {
-		log.Fatalf("Unable to read authorization code: %v", err)
-	}
-
+	authCode := code
 	tok, err := config.Exchange(context.TODO(), authCode)
 	if err != nil {
 		log.Fatalf("Unable to retrieve token from web: %v", err)
@@ -61,18 +66,6 @@ func saveToken(path string, token *oauth2.Token) {
 	}
 	defer f.Close()
 	json.NewEncoder(f).Encode(token)
-}
-func aut(username string) {
-	b, err := os.ReadFile("content.json")
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
-	config, err := google.ConfigFromJSON(b, calendar.CalendarReadonlyScope)
-	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
-	}
-	getClient(config, username)
 }
 
 func getFirstEvent(username string, currTime time.Time) (calendar.Event, bool) {
