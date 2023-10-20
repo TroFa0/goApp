@@ -79,6 +79,7 @@ func MovieByTwoTimes(start time.Time, end time.Time) {
 }
 
 func getMovies(user string) []string {
+	arr = nil
 	temp := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()+1, 0, 0, 0, 0, time.Now().UTC().Location())
 	for i := 0; i <= dayCount; i++ {
 		events := getEventsDay(user, temp)

@@ -70,7 +70,7 @@ func saveToken(path string, token *oauth2.Token) {
 
 func getFirstEvent(username string, currTime time.Time) (calendar.Event, bool) {
 	ctx := context.Background()
-	b, err := os.ReadFile("content.json")
+	b, err := os.ReadFile("webC.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
@@ -102,7 +102,7 @@ func getFirstEvent(username string, currTime time.Time) (calendar.Event, bool) {
 
 func getEventsDay(username string, currTime time.Time) []*calendar.Event {
 	ctx := context.Background()
-	b, err := os.ReadFile("content.json")
+	b, err := os.ReadFile("webC.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
